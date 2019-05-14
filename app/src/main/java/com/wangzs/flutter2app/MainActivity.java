@@ -9,9 +9,8 @@ import android.widget.Button;
 /**
  * @description:
  * @autour: wangzs
- * @date:  2019-02-15 17:20
+ * @date: 2019-02-15 17:20
  * @version:
- *
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -26,13 +25,18 @@ public class MainActivity extends AppCompatActivity {
         intentFlutter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, FlutterActivity.class));
+                Intent intent = new Intent(MainActivity.this, FlutterActivity.class);
+                intent.putExtra("route", "one_page");
+                startActivity(intent);
             }
         });
         intentFlutterWithParams.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, FlutterActivity.class));
+                Intent intent = new Intent(MainActivity.this, FlutterActivity.class);
+                intent.putExtra("params", "");
+                intent.putExtra("route", "two_page");
+                startActivity(intent);
             }
         });
 

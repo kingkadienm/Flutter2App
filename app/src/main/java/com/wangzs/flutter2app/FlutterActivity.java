@@ -7,82 +7,52 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.wangzs.flutter2app.handler.FlutterMethodHandler;
+
 import io.flutter.facade.Flutter;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.view.FlutterView;
 
 /**
  * @description:
  * @autour: wangzs
- * @date:  2019-02-15 17:43
+ * @date: 2019-02-15 17:43
  * @version:
- *
  */
 public class FlutterActivity extends AppCompatActivity {
-    public static final String FlutterToAndroidCHANNEL = "com.wangzs.native2flutter";
-    public static final String AndroidToFlutterCHANNEL = "com.wangzs.flutter2native";
+    private FlutterView flutterView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_flutter_acticity);
-        FrameLayout frameLayout = findViewById(R.id.rl_flutter);
-        FlutterView flutterView = Flutter.createView(this, getLifecycle(), "route");
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        flutterView.setLayoutParams(layoutParams);
-        frameLayout.addView(flutterView, layoutParams);
-        new EventChannel(flutterView, AndroidToFlutterCHANNEL)
-                .setStreamHandler(new EventChannel.StreamHandler() {
-                    @Override
-                    public void onListen(Object o, EventChannel.EventSink eventSink) {
-                        String androidParmas = "来自android原生的参数";
-                        eventSink.success(androidParmas);
-                    }
+        String params = getIntent().getStringExtra("params");
+        String route = getIntent().getStringExtra("route");
+        FrameLayout rootView = findViewById(R.id.rl_flutter);
+        flutterView = Flutter.createView(this, getLifecycle(),route);
+        FlutterMethodHandler.getInstance().registerWith(flutterView);
+        rootView.addView(flutterView);
 
-                    @Override
-                    public void onCancel(Object o) {
-
-                    }
-                });
-
-
-        new MethodChannel(flutterView, FlutterToAndroidCHANNEL).setMethodCallHandler(new MethodChannel.MethodCallHandler() {
+        flutterView.post(new Runnable() {
             @Override
-            public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
-
-                //接收来自flutter的指令oneAct
-                if (methodCall.method.equals("withoutParams")) {
-
-                    //跳转到指定Activity
-                    Intent intent = new Intent(FlutterActivity.this, Main2Activity.class);
-                    startActivity(intent);
-
-                    //返回给flutter的参数
-                    result.success("success");
-                }
-                //接收来自flutter的指令twoAct
-                else if (methodCall.method.equals("withParams")) {
-
-                    //解析参数
-                    String text = methodCall.argument("flutter");
-
-                    //带参数跳转到指定Activity
-                    Intent intent = new Intent(FlutterActivity.this, Main2Activity.class);
-                    intent.putExtra("test", text);
-                    startActivity(intent);
-
-                    //返回给flutter的参数
-                    result.success("success");
-                } else {
-                    result.notImplemented();
-                }
+            public void run() {
+                FlutterMethodHandler.getInstance().getMethodChannel().invokeMethod(route, params);
             }
         });
+
+    }
+
+    /**
+     * 屏蔽跳转flutter页面 按下返回键直接推出flutter页面，而不是返回上一级
+     */
+    @Override
+    public void onBackPressed() {
+        if (this.flutterView != null) {
+            this.flutterView.popRoute();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
