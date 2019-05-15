@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.gson.Gson;
+import com.wangzs.flutter2app.model.UserBean;
+
 /**
  * @description:
  * @autour: wangzs
@@ -21,12 +24,16 @@ public class MainActivity extends AppCompatActivity {
         Button intentFlutter = findViewById(R.id.intent_flutter);
         Button intentFlutterWithParams = findViewById(R.id.intent_flutter_with_params);
 
+        UserBean userBean = new UserBean("张三","this is data","男",12);
 
+
+        Gson gson = new Gson();
+        String toJson = gson.toJson(userBean);
         intentFlutter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, FlutterActivity.class);
-                intent.putExtra("route", "one_page");
+                intent.putExtra("route", "onePage");
                 startActivity(intent);
             }
         });
@@ -34,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, FlutterActivity.class);
-                intent.putExtra("params", "");
-                intent.putExtra("route", "two_page");
+                intent.putExtra("params", toJson);
+                intent.putExtra("route", "twoPage");
                 startActivity(intent);
             }
         });

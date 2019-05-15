@@ -57,4 +57,12 @@ public class UserBean {
                 ", age=" + age +
                 '}';
     }
+
+    public UserBean(String name, String data, String sex, int age) {
+        this.name = name;
+        this.data = data;
+        this.sex = sex;
+        this.age = age;
+    }
+
 }

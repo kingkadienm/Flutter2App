@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     Routes.configureRoutes(router);
     Application.router = router;
     Application.platformChannel =
-        MethodChannel('com.wangzs.native2flutter');
+        MethodChannel('com.wangzs.flutter2app');
   }
 
   // This widget is the root of your application.

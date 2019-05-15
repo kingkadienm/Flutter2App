@@ -5,6 +5,7 @@ import io.flutter.view.FlutterView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 
 
 import com.wangzs.flutter2app.FlutterActivity;
@@ -63,6 +64,7 @@ public class FlutterMethodHandler implements MethodChannel.MethodCallHandler {
         if (methodCall == null) {
             return;
         }
+        Log.e(TAG, "method is " + methodCall.method + " arguments is " + (methodCall.arguments == null ? "" : methodCall.arguments.toString()));
         Intent intent = new Intent(mActivity, Main2Activity.class);
         switch (methodCall.method) {
             case "withoutParams":
@@ -72,10 +74,8 @@ public class FlutterMethodHandler implements MethodChannel.MethodCallHandler {
                 result.success("success");
                 break;
             case "withParams":
-
                 //解析参数
-                String text = methodCall.argument("flutter");
-
+                String text = methodCall.arguments.toString();
                 //带参数跳转到指定Activity
                 intent.putExtra("test", text);
                 mActivity.startActivity(intent);
